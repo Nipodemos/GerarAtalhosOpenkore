@@ -1,0 +1,1 @@
+# GerarAtalhosOpenkore
