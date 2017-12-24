@@ -183,7 +183,7 @@ public class CodigoPrincipal {
 		
 		modelo = new DefaultListModel<String>();
 		list = new JList<String>(modelo);
-		list.setBounds(253, 195, 160, 178);
+		list.setBounds(239, 195, 160, 178);
 		frame.getContentPane().add(list);
 	}
 	
