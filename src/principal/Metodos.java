@@ -2,12 +2,10 @@ package principal;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import mslinks.ShellLink;
 
@@ -23,6 +21,7 @@ public class Metodos {
 		}
 		File[] uploadDir = fileChooser.getSelectedFiles();
 		// lastDir = new File(uploadDir[uploadDir.length-1].getParent());
+		
 		return uploadDir;
 	}
 	
@@ -39,8 +38,9 @@ public class Metodos {
 		return uploadDir;
 	}
 	
-	public File selectFile(JFrame frame) {
+	public File selectFile(JFrame frame, FileNameExtensionFilter filter) {
 		JFileChooser fileChooser = new JFileChooser(System.getProperty("user.home").toString());
+		fileChooser.setFileFilter(filter);
 		fileChooser.setMultiSelectionEnabled(false);
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		int showOpenDialog = fileChooser.showOpenDialog(frame);
@@ -53,21 +53,31 @@ public class Metodos {
 	}
 	
 	public void gerarAtalhos(
-				String pathOfOpenkoreFile, 
+				String pathOfFile, 
 				String pathofSaveLocation, 
-				List<String> pathsOfControlFolders) throws IOException {
+				File[] pathsOfControlFolders,
+				String selectedButton) throws IOException {
 		
-		pathOfOpenkoreFile.replace("\"", "");
+		pathOfFile.replace("\"", "");
 		pathofSaveLocation.replace("\"", "");
-		for (String x : pathsOfControlFolders) {
-			x.replace("\"", "");
-			ShellLink sl = ShellLink.createLink(pathOfOpenkoreFile)
-				.setCMDArgs("--control=\"" + x + "\" --logs=\"" + x + "\\logs\"");
-			Path path = Paths.get(x);
-			String fileName = path.getFileName().toString();
-			System.out.println(fileName);
-			sl.saveTo(pathofSaveLocation + "\\opk " + fileName + ".lnk");
-			sl.saveTo(x + "\\opk " + fileName + ".lnk");
+		
+		String type;
+		for (File x : pathsOfControlFolders) {
+			x.getAbsolutePath().replace("\"", "");
+			
+			ShellLink sl = ShellLink.createLink(pathOfFile);
+			
+			if (selectedButton == "poseidon.pl") {
+				sl.setCMDArgs("--file=\"" + x.getAbsolutePath() + "\\poseidon.txt\"");
+				type = "poseidon";
+			} else {
+				sl.setCMDArgs("--control=\"" + x + "\" --logs=\"" + x + "\\logs\"");
+				type = "opk";
+				sl.saveTo(x + "\\" + type + " " + x.getName() + ".lnk");
+			}
+			
+			System.out.println(x.getName());
+			sl.saveTo(pathofSaveLocation + "\\" + type + " " + x.getName() + ".lnk");
 		}
 	}
 }
